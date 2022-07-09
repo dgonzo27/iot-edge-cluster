@@ -1,0 +1,47 @@
+name: Build and Push to ACR
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ACR Build and Push B2S
+        id: acr-b2s
+        uses: azure/acr-build@v1
+        with:
+          service_principal: ${{ secrets.service_principal }}
+          service_principal_password: ${{ secrets.service_principal_password }}
+          tenant: ${{ secrets.tenant }}
+          registry: ${{ secrets.registry }}
+          repository: ${{ secrets.repository }}
+          image: iot-modules-b2s
+          folder: ./
+          dockerfile: ./modules/blobToSamba/Dockerfile
+      
+      - name: ACR Build and Push S2B
+        id: acr-s2b
+        uses: azure/acr-build@v1
+        with:
+          service_principal: ${{ secrets.service_principal }}
+          service_principal_password: ${{ secrets.service_principal_password }}
+          tenant: ${{ secrets.tenant }}
+          registry: ${{ secrets.registry }}
+          repository: ${{ secrets.repository }}
+          image: iot-modules-s2b
+          folder: ./
+          dockerfile: ./modules/sambaToBlob/Dockerfile
+      
+      - name: ACR Build and Push Worker
+        id: acr-worker
+        uses: azure/acr-build@v1
+        with:
+          service_principal: ${{ secrets.service_principal }}
+          service_principal_password: ${{ secrets.service_principal_password }}
+          tenant: ${{ secrets.tenant }}
+          registry: ${{ secrets.registry }}
+          repository: ${{ secrets.repository }}
+          image: iot-celery-worker
+          folder: ./
+          dockerfile: ./common/Dockerfile

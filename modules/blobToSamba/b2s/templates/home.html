@@ -1,0 +1,78 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<div class="starter-template">
+  <h1>BlobToSamba Module</h1>
+  <hr /><br />
+  <div>
+    <h3>Direct Methods</h3>
+    <p>Invoke a Direct Method Request</p>
+    <div class="btn-group" role="group" aria-label="direct-methods">
+      <button
+        id="button-button"
+        type="button"
+        class="btn btn-primary"
+        onclick="handleClick(1)"
+      >
+        Poll Blob
+      </a>
+    </div>
+    <div
+      id="button-spinner"
+      class="spinner-border"
+      role="status"
+      style="display: none"
+    ></div>
+  </div>
+  <br /><br />
+  <div
+    id="success-alert"
+    class="alert alert-success"
+    role="alert"
+    style="display: none"
+  >
+    <div>Request was successful!</div>
+    <div style="flex-grow: 1"></div>
+    <button
+      type="button"
+      class="btn-primary"
+      onclick="dismissAlert()"
+    >
+      close
+    </button>
+  </div>
+  <div
+    id="error-alert"
+    class="alert alert-danger alert-dismissable"
+    role="alert"
+    style="display: none"
+  >
+    <div>Request failed!</div>
+    <div style="flex-grow: 1"></div>
+    <button
+      type="button"
+      class="btn-primary"
+      onclick="dismissAlert()"
+    >
+      close
+    </button>
+  </div>
+  <div>
+    <h3>Request Status</h3>
+    <br />
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Status</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+      <tbody id="tasks">
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

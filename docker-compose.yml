@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  b2s:
+    image: iot-modules-b2s
+    build:
+      context: .
+      dockerfile: modules/blobToSamba/Dockerfile
+    command: uvicorn b2s.main:app --host 0.0.0.0 --reload
+    ports:
+      - "8081:8000"
+    environment:
+      - APP_INSIGHTS_INSTRUMENTATION_KEY=
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - ./common:/opt/src/common
+      - ./modules/blobToSamba:/opt/src/blobToSamba
+  
+  s2b:
+    image: iot-modules-s2b
+    build:
+      context: .
+      dockerfile: modules/sambaToBlob/Dockerfile
+    command: uvicorn s2b.main:app --host 0.0.0.0 --reload
+    ports:
+      - "8082:8000"
+    environment:
+      - APP_INSIGHTS_INSTRUMENTATION_KEY=
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - ./common:/opt/src/common
+      - ./modules/sambaToBlob:/opt/src/sambaToBlob
+
+  worker:
+    image: iot-celery-worker
+    build:
+      context: .
+      dockerfile: common/Dockerfile     
+    command: celery worker --app=iotcommon.worker.celery
+    volumes:
+      - ./common:/opt/src/common
+    environment:
+      - APP_INSIGHTS_INSTRUMENTATION_KEY=
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - b2s
+      - redis
+
+  redis:
+    image: redis:6-alpine
